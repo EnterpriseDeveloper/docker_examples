@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1 # how much pods you want to run
+  selector:
+    matchLabels:
+      component: web # unick ID
+  template:
+    metadata:
+      labels:
+        component: web # unick ID
+    spec:
+      containers:
+        - name: client
+          image: voroshilovmax90/multy-clietn
+          ports: 
+            - containerPort: 3000

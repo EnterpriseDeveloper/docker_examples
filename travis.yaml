@@ -1,0 +1,23 @@
+#travis config for k8s google cloud
+sudo: required
+services:
+  - docker
+env:
+  global:
+    - SHA=$(git rev-parse HEAD) #use SHA to be 100% that we update k8s container always correctly
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1 # THIS GIVE ABILITY TO AVTOMATICLY SEY YES FOR ALL YES/NO WARNINGS IN TERMINAL
+before_install:
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
+  # need add more config for google cloud from https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11628230#overview
+  # need add this config to server Google Cloud too! https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11628264#overview
+  # need add more config for travic cli from https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11628232#overview
+  # he use helm https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/learn/lecture/11628272#overview
+
+deploy:
+  provider: script
+  script: bach ./deploy.sh
+  on:
+    branch: master

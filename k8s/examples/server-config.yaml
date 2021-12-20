@@ -1,0 +1,32 @@
+# способо обьеденить две конфигурации в один
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 3 # how much pods you want to run
+  selector:
+    matchLabels:
+      component: server # unick ID
+  template:
+    metadata:
+      labels:
+        component: server # unick ID
+    spec:
+      containers:
+        - name: server
+          image: voroshilovmax90/multy-server
+          ports: 
+            - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-cluster-api-service
+spec:
+  type: ClusterApi
+  selector: 
+    component: server # unick ID to deployment that will connect this service
+  ports:
+    - port: 5000
+      targetPort: 5000 

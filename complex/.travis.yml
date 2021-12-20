@@ -1,0 +1,35 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+
+before_install:
+  - docker build -t voroshilovmax90/react-test -f ./client/Dockerfile.dev ./client 
+
+script:
+  - docker run -e CI=true voroshilovmax90/react-test npm test
+
+after_success:
+  - docker build -t voroshilovmax90/multy-clietn ./client   
+  - docker build -t voroshilovmax90/multy-nginx ./nginx  
+  - docker build -t voroshilovmax90/multy-server ./server   
+  - docker build -t voroshilovmax90/multy-worker ./worker   
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push voroshilovmax90/multy-clietn
+  - docker push voroshilovmax90/multy-nginx
+  - docker push voroshilovmax90/multy-server
+  - docker push voroshilovmax90/multy-worker
+
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "multi-docker"
+  env: "MultiDocker-env"
+  bucket_name: "elasticbeanstalk-us-east-2-548425640534"  
+  bucker_path: "multi-docker"  
+  on:
+    branch: master   
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY 

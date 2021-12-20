@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 3 #сколько Pods нужно запустить
+  selector:
+    matchLabels:
+      component: server #uniq ID
+  template:
+    metadata:
+      labels:
+        component: server #uniq ID
+    spec:
+      containers:
+        - name: server
+          image: cygnetops/multi-server-pgfix-5-11
+          ports:
+            - containerPort: 5000
+          env: 
+            - name: REDIS_HOST #env name variable
+              value: redis-cluster-ip-service #env value variable
+            - name: REDIS_PORT
+              value: '6379'
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: postgres-cluster-ip-service
+            - name: PGPORT
+              value: '5432'
+            - name: PGDATABASE
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef: 
+                  name: pgpassword
+                  key: PGPASSWORD

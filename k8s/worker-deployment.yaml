@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: 1 #сколько Pods нужно запустить
+  selector:
+    matchLabels:
+      component: worker #uniq ID
+  template:
+    metadata:
+      labels:
+        component: worker #uniq ID
+    spec:
+      containers:
+        - name: worker
+          image: stephengrider/multi-worker
+          # ненадо порта потому что ниодин сервис не конектитца к этому сервису
+          env: 
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            - name: REDIS_PORT
+              value: '6397'
